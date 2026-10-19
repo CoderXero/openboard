@@ -1,0 +1,74 @@
+{
+  "name": "openboard",
+  "version": "0.1.0",
+  "description": "An offline-first Linux desktop whiteboard",
+  "license": "GPL-3.0-or-later",
+  "author": { "name": "OpenBoard contributors", "email": "maintainers@openboard.org" },
+  "main": "dist-electron/main/index.js",
+  "desktopName": "openboard",
+  "scripts": {
+    "dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && electron --require tsx/cjs src/main/index.ts --dev\"",
+    "build:renderer": "vite build",
+    "build:main": "node scripts/build-main.mjs",
+    "build": "npm run build:renderer && npm run build:main",
+    "start": "npm run build && electron .",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "jszip": "latest",
+    "lucide-react": "latest",
+    "pdf-lib": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "latest",
+    "zustand": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "concurrently": "latest",
+    "electron": "latest",
+    "electron-builder": "latest",
+    "esbuild": "latest",
+    "eslint": "latest",
+    "prettier": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vitest": "latest",
+    "wait-on": "latest"
+  },
+  "build": {
+    "appId": "org.openboard.OpenBoard",
+    "productName": "OpenBoard",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
+    "electronFuses": {
+      "runAsNode": false,
+      "enableNodeOptionsEnvironmentVariable": false
+    },
+    "files": ["dist/**", "dist-electron/**", "package.json"],
+    "afterPack": "scripts/after-pack.cjs",
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Graphics;Education;Office;",
+      "mimeTypes": ["application/x-openboard"],
+      "executableName": "openboard"
+    },
+    "fileAssociations": [{
+      "ext": "openboard",
+      "name": "OpenBoard project",
+      "description": "OpenBoard whiteboard project",
+      "role": "Editor",
+      "mimeType": "application/x-openboard"
+    }]
+  }
+}
